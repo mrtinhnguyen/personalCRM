@@ -1,0 +1,25 @@
+{
+  "name": "monica-next",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/contracts"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "build:web": "npm --workspace apps/web run build",
+    "lint:web": "npm --workspace apps/web run lint",
+    "test:api": "cd services/api && uv run pytest",
+    "format:api": "cd services/api && uv run ruff format app tests",
+    "check": "npm run lint:web && npm run test:api",
+    "demo": "node scripts/demo.mjs",
+    "privacy:check": "python3 scripts/check-public.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  },
+  "license": "MIT",
+  "overrides": {
+    "postcss": "^8.5.28"
+  }
+}

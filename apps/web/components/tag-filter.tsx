@@ -1,0 +1,10 @@
+"use client";
+import {useEffect,useState} from 'react';
+type Tag={id:string;name:string;people:number;sources:string[]};
+const sourceName:Record<string,string>={wechat:'微信',manual:'手工',monica:'Monica'};
+export function TagFilter({profileType,selected,onSelect}:{profileType:string;selected:string;onSelect:(id:string)=>void}){
+ const [tags,setTags]=useState<Tag[]>([]),[search,setSearch]=useState(''),[error,setError]=useState(false),[busy,setBusy]=useState(true),[attempt,setAttempt]=useState(0);
+ useEffect(()=>{const abort=new AbortController();setBusy(true);setError(false);fetch(`/api/v1/tags${profileType==='all'?'':`?profile_type=${profileType}`}`,{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(setTags).catch(e=>{if(e.name!=='AbortError')setError(true)}).finally(()=>{if(!abort.signal.aborted)setBusy(false)});return()=>abort.abort()},[profileType,attempt]);
+ const active=tags.find(t=>t.id===selected);const visible=tags.filter(t=>t.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()));
+ return <section className="tag-browser" aria-label="联系人标签筛选"><div className="tag-browser-heading"><h2>按标签查找 <small>{tags.length} 个标签</small></h2><label><span className="sr-only">搜索标签</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索标签…"/></label>{selected&&<button className="button button-soft" onClick={()=>onSelect('')}>清除标签</button>}</div>{active&&<p className="active-tag">正在查看「{active.name}」· {active.people} {profileType==='group'?'个群':'位联系人'}</p>}{error?<p role="alert">标签读取失败。<button onClick={()=>setAttempt(n=>n+1)}>重试</button></p>:<div className="tag-options">{visible.map(tag=><button aria-pressed={selected===tag.id} className={selected===tag.id?'selected':''} key={tag.id} onClick={()=>onSelect(selected===tag.id?'':tag.id)} title={tag.sources?.map(s=>sourceName[s]||s).join('、')}><span>{tag.name}</span><b>{tag.people}</b></button>)}</div>}{busy&&<small role="status">正在读取标签…</small>}{!busy&&!error&&!visible.length&&<p className="muted">{search?'没有匹配的标签。':'尚无标签。'}</p>}</section>;
+}

@@ -1,0 +1,11 @@
+"use client";
+import Link from "next/link";
+import {useEffect,useState} from "react";
+import {ConversationView} from "./conversation-view";
+type Conversation={id:string;conversation_type:string;external_id:string;profile_id?:string;display_name?:string};
+export function ConversationsView(){
+ const [rows,setRows]=useState<Conversation[]>([]),[selected,setSelected]=useState<Conversation|null>(null),[query,setQuery]=useState(""),[more,setMore]=useState(false),[error,setError]=useState("");
+ async function load(cursor?:string){try{const p=new URLSearchParams({q:query,limit:'40'});if(cursor)p.set('cursor',cursor);const r=await fetch('/api/v1/conversations?'+p);if(!r.ok)throw new Error();const data=await r.json();setRows(old=>cursor?[...old,...data]:data);setMore(data.length===40);setError("");}catch{setError("无法读取会话列表，请重试。");}}
+ useEffect(()=>{void load();},[]);
+ return <div className="page-wrap"><div className="page-heading"><div><h1>聊天记录</h1><p className="muted">选择会话后读取消息。未关联联系人或群的来源会话也保留在这里。</p></div></div>{selected?<><div className="panel-heading"><button className="button button-soft" onClick={()=>setSelected(null)}>返回会话列表</button><h2>{selected.display_name||selected.external_id.replace(/^(direct|group):/,'')}</h2>{selected.profile_id&&<Link className="button button-soft" href={`/profiles/${selected.profile_id}`}>打开资料</Link>}</div><ConversationView key={selected.id} conversationId={selected.id}/></>:<><form className="message-search" onSubmit={e=>{e.preventDefault();void load();}}><label htmlFor="conversation-query">查找会话</label><input id="conversation-query" value={query} onChange={e=>setQuery(e.target.value)} placeholder="联系人、群名或来源账号"/><button className="button button-soft">查找</button></form>{error&&<p role="alert">{error}</p>}<section className="conversation-list">{rows.map(row=><button className="conversation-row" key={row.id} onClick={()=>setSelected(row)}><strong>{row.display_name||row.external_id.replace(/^(direct|group):/,'')}</strong><span>{row.conversation_type==='group'?'群聊':'会话'}{!row.profile_id?' · 尚未关联资料':''}</span></button>)}</section>{more&&<button className="button button-soft" onClick={()=>void load(rows.at(-1)?.id)}>加载更多会话</button>}</>}</div>;
+}
