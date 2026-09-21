@@ -1,7 +1,7 @@
 # Contributing
 
-Small, focused pull requests and reproducible bug reports are welcome. The UI is
-primarily Chinese; issues and contributions may be in Chinese or English.
+Small, focused pull requests and reproducible bug reports are welcome. Issues
+and contributions may be in English or Chinese.
 
 ## Development
 

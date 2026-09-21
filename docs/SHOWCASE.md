@@ -8,7 +8,7 @@ fixture API in `scripts/demo.mjs`. They are not captures of a personal database.
 - The demo server does not import API database code or read archives, cookies,
   credentials, `.env`, or production data. It responds with values written in
   the script itself and listens only on loopback.
-- People are labeled `联系人 01`, `联系人 02`, and so on. Groups and organizations
+- People are labeled `Person 01`, `Person 02`, and so on. Groups and organizations
   use generic fictional labels. The UUIDs are generated from small integer IDs.
 - All counts, dates, graph edges, descriptions, and post text are invented.
 - No real portraits, photographs, social handles, messages, or location records
@@ -34,7 +34,7 @@ without address bars, desktop notifications, bookmarks, or developer tools.
    analytics visible.
 2. `contacts.png`: `/profiles`, tag filters and numbered contacts visible.
 3. `relationships.png`: `/relationships`, wait for the graph to load, use
-   “适合全部节点” and zoom as needed to show communities.
+   “Fit all nodes” and zoom as needed to show communities.
 4. `timeline.png`: `/dashboard#timeline`, show the fictional text posts.
 
 The published images use a 1440 × 1080 desktop viewport. Review every visible label and
@@ -54,5 +54,5 @@ node scripts/capture-showcase.mjs
 The capture script accepts only a loopback port (`DEMO_PORT`), blocks external
 requests and service workers, checks for the synthetic-data banner, and fails on
 page errors. It also verifies that contact-list labels contain only numbered
-contacts. Review the resulting pixels before publishing. If using an installed
+people (`Person 01`, `Person 02`, …). Review the resulting pixels before publishing. If using an installed
 Chrome instead of the Playwright browser, set `SHOWCASE_BROWSER_CHANNEL=chrome`.

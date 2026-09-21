@@ -37,7 +37,7 @@ export function RelationshipsView() {
       .then(() => (window as Window & { initMonicaGraph?: () => void }).initMonicaGraph?.())
       .catch(() => {
         const status = document.querySelector("[data-graph-status]");
-        if (status) status.textContent = "关系图脚本加载失败，请刷新页面重试。";
+        if (status) status.textContent = "Could not load the graph scripts. Refresh and try again.";
       });
     return () => { const panel = root?.querySelector("[data-relationship-graph]") as (HTMLElement & { _destroyGraph?: () => void }) | null; panel?._destroyGraph?.(); };
   }, []);
@@ -45,16 +45,16 @@ export function RelationshipsView() {
   return <div className="page-wrap relationships-page" ref={rootRef}>
     <div className="page-heading">
       <div>
-        <p className="eyebrow">RELATIONSHIP GRAPH</p>
-        <h1>朋友圈关系图</h1>
-        <p className="muted">沿用熟悉的关系图交互，点击节点打开人物资料。朋友圈互动、共同群关系和群成员边可以按需打开。</p>
+        <p className="eyebrow">Relationship graph</p>
+        <h1>People you keep in touch with</h1>
+        <p className="muted">Pan, zoom, and search the graph. Click a node to open that person. Moments interactions, shared groups, and membership edges can be turned on when you need them.</p>
       </div>
-      <Link className="button button-soft" href="/dashboard"><ArrowLeft size={15} />返回总览</Link>
+      <Link className="button button-soft" href="/dashboard"><ArrowLeft size={15} />Back to overview</Link>
     </div>
     <section className="graph-source-note">
       <Network size={18} />
-      <div><strong>朋友圈互动与已确认关系</strong><p>保留社区布局、搜索、拖动、缩放、边权筛选和节点详情；每个节点按明确账号映射打开对应人物。</p></div>
-      <span><ShieldCheck size={14} />按需加载</span>
+      <div><strong>Moments interactions and confirmed relationships</strong><p>Community layout, search, drag, zoom, edge-weight filters, and node details stay in one view. Each node opens the person it is mapped to.</p></div>
+      <span><ShieldCheck size={14} />Loaded on demand</span>
     </section>
     <section
       className="monica-graph-panel"
@@ -63,26 +63,26 @@ export function RelationshipsView() {
       data-contact-url-template="/profiles/__CONTACT_HASH__"
     >
       <header className="monica-graph-header">
-        <div><p className="eyebrow">WECHAT MOMENTS</p><h2>朋友圈关系图</h2><p className="muted">用已缓存朋友圈中的点赞、评论、回复、共同受众与共同群关系绘制。先使用离线坐标，再由 D3 动态演算社群布局。</p></div>
-        <button className="button button-primary" type="button" data-graph-load>加载关系图</button>
+        <div><p className="eyebrow">WeChat Moments</p><h2>Interaction graph</h2><p className="muted">Drawn from cached likes, comments, replies, shared audiences, and shared groups. Offline coordinates load first; D3 then lays out the communities.</p></div>
+        <button className="button button-primary" type="button" data-graph-load>Load graph</button>
       </header>
       <div className="monica-graph-controls" data-graph-controls hidden>
         <form className="monica-graph-search" role="search" data-graph-search-form>
-          <label htmlFor="relationship-node-search">查找节点</label>
-          <input id="relationship-node-search" type="search" list="relationship-node-options" autoComplete="off" placeholder="姓名或微信昵称" data-graph-search />
+          <label htmlFor="relationship-node-search">Find a node</label>
+          <input id="relationship-node-search" type="search" list="relationship-node-options" autoComplete="off" placeholder="Name or nickname" data-graph-search />
           <datalist id="relationship-node-options" data-graph-search-options />
-          <button className="button button-soft" type="submit">定位</button>
+          <button className="button button-soft" type="submit">Locate</button>
         </form>
-        <label className="graph-range" htmlFor="relationship-edge-filter">最低边权 <input id="relationship-edge-filter" type="range" min="0" max="100" step="1" defaultValue="0" data-graph-filter /><output data-graph-filter-value>0</output></label>
-        <button className="button button-soft" type="button" data-graph-motion aria-pressed="false">节点运动：关</button>
-        <label className="graph-checkbox"><input type="checkbox" data-graph-groups />加入共同群关系</label>
-        <button className="button button-soft" type="button" data-graph-zoom-in>放大</button><button className="button button-soft" type="button" data-graph-zoom-out>缩小</button><button className="button button-soft" type="button" data-graph-reset>适合全部节点</button>
+        <label className="graph-range" htmlFor="relationship-edge-filter">Minimum edge weight <input id="relationship-edge-filter" type="range" min="0" max="100" step="1" defaultValue="0" data-graph-filter /><output data-graph-filter-value>0</output></label>
+        <button className="button button-soft" type="button" data-graph-motion aria-pressed="false">Node motion: off</button>
+        <label className="graph-checkbox"><input type="checkbox" data-graph-groups />Include shared groups</label>
+        <button className="button button-soft" type="button" data-graph-zoom-in>Zoom in</button><button className="button button-soft" type="button" data-graph-zoom-out>Zoom out</button><button className="button button-soft" type="button" data-graph-reset>Fit all nodes</button>
       </div>
-      <p className="monica-graph-status" role="status" aria-live="polite" data-graph-status>尚未加载。滚动到本区块后自动读取关系图。</p>
+      <p className="monica-graph-status" role="status" aria-live="polite" data-graph-status>Not loaded yet. The graph reads itself when this section is in view.</p>
       <div className="monica-graph-canvas-wrap">
-        <canvas className="monica-graph-canvas" data-graph-canvas tabIndex={0} role="img" aria-label="动态朋友圈关系图，可搜索节点并使用方向键平移" />
+        <canvas className="monica-graph-canvas" data-graph-canvas tabIndex={0} role="img" aria-label="Interactive relationship graph. Search nodes or pan with the arrow keys." />
       </div>
-      <aside className="monica-graph-details" data-graph-details aria-live="polite">加载后，将指针移到节点上查看互动明细。</aside>
+      <aside className="monica-graph-details" data-graph-details aria-live="polite">After it loads, hover a node for interaction details.</aside>
       <p className="monica-graph-footnote" data-graph-footnote hidden />
     </section>
   </div>;

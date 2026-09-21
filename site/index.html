@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monica Next — a private CRM for people you actually know</title>
+  <meta name="description" content="Self-hosted personal relationship CRM. Keep contacts, social timelines, chat archives, and an interactive relationship graph on a server you control.">
+  <link rel="canonical" href="https://hmumixam.github.io/monica-next/">
+  <meta property="og:title" content="Monica Next">
+  <meta property="og:description" content="A self-hosted CRM for contacts, social timelines, and the graph of people around you.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hmumixam.github.io/monica-next/">
+  <meta property="og:image" content="https://hmumixam.github.io/monica-next/images/dashboard.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@420;600;700&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="wordmark" href="./">
+        <span class="mark" aria-hidden="true">M</span>
+        <strong>Monica Next</strong>
+      </a>
+      <nav class="links" aria-label="Site">
+        <a href="https://github.com/hmumixaM/monica-next">GitHub</a>
+        <a href="#try">Try the demo</a>
+        <a href="https://github.com/hmumixaM/monica-next/blob/main/docs/DEPLOYMENT.md">Self-host</a>
+        <a href="https://github.com/hmumixaM/monica-next/blob/main/README.zh.md" lang="zh-Hans" hreflang="zh-Hans">中文</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    <section class="hero">
+      <h1>Keep the people you know on a server you control.</h1>
+      <p class="lede">Monica Next is a self-hosted personal CRM. It holds contact files, imported social posts, chat archives, and an interactive graph of who talks to whom — without sending that history to someone else’s cloud.</p>
+      <p class="actions">
+        <a class="action" href="https://github.com/hmumixaM/monica-next">View the repository</a>
+        <a class="action quiet" href="#try">Run the synthetic demo</a>
+      </p>
+    </section>
+
+    <div class="wide">
+      <a class="shot" href="images/dashboard.png">
+        <img src="images/dashboard.png" width="1440" height="1080" alt="Overview with monthly post counts, interaction rankings, and numbered synthetic contacts">
+      </a>
+      <p class="caption">Overview of imported activity. Screenshots are the real interface running on invented fixtures — people are labeled Person 01, Person 02, and so on. No real names, portraits, chats, or private hosts.</p>
+    </div>
+
+    <div class="essay">
+      <section>
+        <h2>What it keeps</h2>
+        <ul>
+          <li><strong>People and groups</strong> — profiles, tags, work and school, and explicit links between a source account and a person.</li>
+          <li><strong>Where a fact came from</strong> — field revisions, original provenance, current projections, and manual edits stay distinct.</li>
+          <li><strong>A social timeline</strong> — WeChat, Instagram, and LinkedIn posts, media, and interactions in one place.</li>
+          <li><strong>A graph you can walk</strong> — search, pan, zoom, communities, and optional shared-group edges.</li>
+          <li><strong>Maps and counts</strong> — monthly activity, rankings, chat summaries, and archived or profile cities. Not live tracking.</li>
+          <li><strong>Chat archives</strong> — open a conversation when you need it; search message text after import.</li>
+        </ul>
+        <p>This is an independent project. It is not the official Monica app and is not affiliated with Monica or with the social platforms it can import from. Importers read archives you already have permission to use.</p>
+      </section>
+
+      <section id="people">
+        <h2>People, with context still attached</h2>
+        <p>A contact is more than a name. Tags, notes, and source accounts sit on one file so a WeChat identity and a LinkedIn profile can belong to the same person without collapsing their history.</p>
+        <a class="shot" href="images/contacts.png">
+          <img src="images/contacts.png" width="1440" height="1080" alt="People list with fictional tags such as Creative partners and Reading group">
+        </a>
+        <p class="caption">The people list, filtered by tags. Every label in this picture is fictional.</p>
+      </section>
+
+      <section id="graph">
+        <h2>A graph, not a spreadsheet of connections</h2>
+        <p>The relationship view uses the same community layout as the live app: clusters of people, weighted edges from Moments interactions, and a search box that jumps to a node. Click through to the person the node is mapped to.</p>
+        <a class="shot" href="images/relationships.png">
+          <img src="images/relationships.png" width="1440" height="1600" alt="Relationship graph with six synthetic communities of numbered people">
+        </a>
+        <p class="caption">Six invented communities. A missing edge is a limit of the cached archive, not a claim about real life.</p>
+      </section>
+
+      <section id="timeline">
+        <h2>What they posted, kept locally</h2>
+        <p>The timeline is a reading surface for imported posts. Filter by WeChat, Instagram, or LinkedIn. Media stays on disk you control; the public screenshots use text-only demo posts on purpose.</p>
+        <a class="shot" href="images/timeline.png">
+          <img src="images/timeline.png" width="1440" height="1080" alt="Timeline of four fictional posts from numbered people">
+        </a>
+        <p class="caption">Four demo posts. The copy was written for this showcase and does not correspond to any real account.</p>
+      </section>
+
+      <section id="try">
+        <h2>Try the interface without a database</h2>
+        <p>Node.js 22+ is enough. The demo never opens PostgreSQL, archives, or <code>.env</code>. Writes are rejected.</p>
+        <pre><code>git clone https://github.com/hmumixaM/monica-next.git
+cd monica-next
+npm ci
+npm run demo</code></pre>
+        <p>Then open <a href="http://127.0.0.1:4310/dashboard">http://127.0.0.1:4310/dashboard</a>. Stop it with Ctrl+C.</p>
+      </section>
+
+      <section>
+        <h2>Run the full application</h2>
+        <p>Docker Engine, Compose v2, and Python 3. The first-account script asks for an email and password without putting the password in shell history.</p>
+        <pre><code>python3 scripts/init-env.py
+docker compose --env-file .env -f infra/docker-compose.yml up -d --build
+python3 scripts/bootstrap.py</code></pre>
+        <p>Visit <strong>http://localhost:8080/login</strong>. The default bind is loopback. For real data, set trusted HTTPS and <code>APP_ENV=production</code> before exposing the host. Deployment, backup, and recovery: <a href="https://github.com/hmumixaM/monica-next/blob/main/docs/DEPLOYMENT.md">docs/DEPLOYMENT.md</a>.</p>
+      </section>
+
+      <section>
+        <h2>Privacy of this page</h2>
+        <p>GitHub Pages is a public brochure. It is not a live CRM. The screenshots were captured from the synthetic demo in this repository. Do not publish production screenshots, archives, or credentials in issues or pull requests. Maps in the app request OpenStreetMap tiles; this page does not load a map.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>MIT licensed. <a href="https://github.com/hmumixaM/monica-next">Source on GitHub</a> · <a href="https://github.com/hmumixaM/monica-next/blob/main/README.zh.md" lang="zh-Hans">中文说明</a></p>
+    <p>Independent software. Not affiliated with Monica, WeChat, Instagram, or LinkedIn.</p>
+  </footer>
+</body>
+</html>

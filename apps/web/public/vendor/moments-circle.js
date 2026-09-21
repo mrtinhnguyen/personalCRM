@@ -12,7 +12,7 @@
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
-  const formatNumber = value => Math.round(number(value)).toLocaleString('zh-CN');
+  const formatNumber = value => Math.round(number(value)).toLocaleString('en-US');
   const directionalWeight = counts => (
     number(counts?.[0])
     + 3 * number(counts?.[1])
@@ -36,7 +36,7 @@
     const resetButton = root.querySelector('[data-moments-reset]');
     if (!window.d3 || !dataElement || !svgElement) {
       if (details) {
-        details.textContent = 'D3.js 未加载，关系明细仍可在下方查看。';
+        details.textContent = 'D3.js did not load. Details below still work.';
       }
       return;
     }
@@ -137,24 +137,24 @@
         return;
       }
       if (!node || node.center) {
-        details.textContent = '将指针移到节点上查看互动明细；拖动节点固定位置，双击释放。';
+        details.textContent = 'Hover a node for details. Drag to pin; double-click to release.';
         return;
       }
       const outward = node.out.reduce((total, value) => total + number(value), 0);
       const inward = node.in.reduce((total, value) => total + number(value), 0);
       details.textContent = node.groupOnly
-        ? `${node.label} · 仅共同群 ${formatNumber(node.group)} · 最弱虚线关系`
+        ? `${node.label} · shared groups only ${formatNumber(node.group)} · weakest dashed tie`
         : [
             node.label,
-            `赞 ${formatNumber(node.like)}`,
-            `评论 ${formatNumber(node.comment)}`,
-            `回复 ${formatNumber(node.reply)}`,
-            `提醒 ${formatNumber(node.mention)}`,
-            `去 ${formatNumber(outward)}`,
-            `来 ${formatNumber(inward)}`,
-            `互惠 ${formatNumber(number(node.reciprocity) * 100)}%`,
-            `共同群 ${formatNumber(node.group)}`,
-            `最近 ${node.last || '未知'}`,
+            `Likes ${formatNumber(node.like)}`,
+            `Comments ${formatNumber(node.comment)}`,
+            `Replies ${formatNumber(node.reply)}`,
+            `Mentions ${formatNumber(node.mention)}`,
+            `Sent ${formatNumber(outward)}`,
+            `Received ${formatNumber(inward)}`,
+            `Reciprocity ${formatNumber(number(node.reciprocity) * 100)}%`,
+            `Shared groups ${formatNumber(node.group)}`,
+            `Last ${node.last || 'unknown'}`,
           ].join(' · ');
     };
 
@@ -211,7 +211,7 @@
         .join('a')
         .attr('href', node => node.url || null)
         .attr('aria-label', node => (
-          node.url ? `选择联系人 ${node.label}；再次点击打开` : null
+          node.url ? `Selected ${node.label}; click again to open` : null
         ))
         .style('cursor', node => node.center ? 'default' : (node.url ? 'pointer' : 'grab'))
         .on('pointerenter focus', (event, node) => {
@@ -266,16 +266,16 @@
         .text(node => {
           const outward = node.out.reduce((total, value) => total + number(value), 0);
           const inward = node.in.reduce((total, value) => total + number(value), 0);
-          return `去 ${formatNumber(outward)} · 来 ${formatNumber(inward)}`;
+          return `Sent ${formatNumber(outward)} · received ${formatNumber(inward)}`;
         });
 
       nodeSelection.append('title').text(node => {
         if (node.center) {
-          return `${node.label} 的朋友圈关系`;
+          return `${node.label}'s Moments ties`;
         }
         return node.groupOnly
-          ? `${node.label}：共同群 ${formatNumber(node.group)}`
-          : `${node.label}：赞 ${formatNumber(node.like)}，评论 ${formatNumber(node.comment)}，回复 ${formatNumber(node.reply)}，提醒 ${formatNumber(node.mention)}`;
+          ? `${node.label}: shared groups ${formatNumber(node.group)}`
+          : `${node.label}: likes ${formatNumber(node.like)}, comments ${formatNumber(node.comment)}, replies ${formatNumber(node.reply)}, mentions ${formatNumber(node.mention)}`;
       });
 
       const linkTargetId = link => (
@@ -402,7 +402,7 @@
       }
 
       if (count) {
-        count.textContent = neighbors.length.toLocaleString('zh-CN');
+        count.textContent = neighbors.length.toLocaleString('en-US');
       }
       root.querySelectorAll('[data-moments-group-only-detail]').forEach(element => {
         element.hidden = !includeGroups;
@@ -440,7 +440,7 @@
       const active = motion.getAttribute('aria-pressed') === 'true';
       if(active)simulation?.stop(); else simulation?.alpha(.4).restart();
       motion.setAttribute('aria-pressed', String(!active));
-      motion.textContent = active ? '继续运动' : '暂停运动';
+      motion.textContent = active ? 'Resume motion' : 'Pause motion';
     });
     updateThreshold();
     render();

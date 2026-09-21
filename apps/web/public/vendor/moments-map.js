@@ -6,7 +6,7 @@
   const PADDING = 34;
   const MINIMUM_SPAN = 4;
   const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SOURCE_LABELS = {wechat: '微信', instagram: 'Instagram'};
+  const SOURCE_LABELS = {wechat: 'WeChat', instagram: 'Instagram'};
   const SOURCE_COLORS = {wechat: '#e7040f', instagram: '#8a3ab9'};
 
   const number = value => {
@@ -15,7 +15,7 @@
   };
 
   const placeName = place => place.poi || place.city || place.key;
-  const formatNumber = value => Math.round(number(value)).toLocaleString('zh-CN');
+  const formatNumber = value => Math.round(number(value)).toLocaleString('en-US');
   const yearsFor = place => new Set(
     (place.moments || []).map(moment => String(moment.at).slice(0, 4))
   );
@@ -36,7 +36,7 @@
     const resetButton = root.querySelector('[data-moments-map-reset]');
     if (!window.d3 || !dataElement || !svgElement || !frame) {
       if (details) {
-        details.textContent = '地图脚本未加载，地点明细仍可在下方查看。';
+        details.textContent = 'Map scripts did not load. Place details below still work.';
       }
       return;
     }
@@ -120,7 +120,7 @@
       }
     } catch (error) {
       if (details) {
-        details.textContent = '离线国界底图未加载；足迹圆点和下方地点明细仍可使用。';
+        details.textContent = 'The offline basemap did not load. Dots and the list below still work.';
       }
     }
 
@@ -139,13 +139,13 @@
       .attr('role', 'img')
       .attr('aria-label', place => (
         `${SOURCE_LABELS[place.source] || place.source}，${placeName(place)}，`
-        + `${formatNumber(place.visits)} 次，`
-        + `${place.first} 至 ${place.last}`
+        + `${formatNumber(place.visits)} visits, `
+        + `${place.first} to ${place.last}`
       ))
       .append('title')
       .text(place => (
         `${SOURCE_LABELS[place.source] || place.source} · ${placeName(place)} · `
-        + `${formatNumber(place.visits)} 次 · `
+        + `${formatNumber(place.visits)} visits · `
         + `${place.first} – ${place.last}`
       ));
     const pins = viewport.selectAll('.moments-map-pin');
@@ -175,9 +175,9 @@
       return [
         SOURCE_LABELS[place.source] || place.source,
         placeName(place),
-        place.city || '城市未知',
-        `${formatNumber(count)} 次`,
-        `${place.first} 至 ${place.last}`,
+        place.city || 'Unknown city',
+        `${formatNumber(count)} visits`,
+        `${place.first} to ${place.last}`,
       ].join(' · ');
     };
 
@@ -203,7 +203,7 @@
       if (details) {
         const moments = activeMoments(place);
         details.textContent = moments.length
-          ? `${summary} · ${moments[0].at} · ${moments[0].text || '无文字摘要'}`
+          ? `${summary} · ${moments[0].at} · ${moments[0].text || 'No text summary'}`
           : summary;
       }
       if (!tooltip) {
@@ -216,15 +216,15 @@
       metadata.className = 'db gray mb1';
       metadata.textContent = [
         SOURCE_LABELS[place.source] || place.source,
-        place.city || '城市未知',
-        `${formatNumber(activeVisits(place))} 次`,
+        place.city || 'Unknown city',
+        `${formatNumber(activeVisits(place))} visits`,
         `${place.first} – ${place.last}`,
       ].join(' · ');
       tooltip.replaceChildren(heading, metadata);
       activeMoments(place).forEach(moment => {
         const line = document.createElement(moment.url ? 'a' : 'span');
         line.className = 'db mt1';
-        line.textContent = `${moment.at} · ${moment.text || '无文字摘要'}`;
+        line.textContent = `${moment.at} · ${moment.text || 'No text summary'}`;
         if (moment.url) {
           line.href = moment.url;
           line.target = '_blank';
@@ -310,9 +310,9 @@
           .map(source => SOURCE_LABELS[source] || source)
           .join('、');
         details.textContent = selectedSources.size === 0
-          ? '未选择任何来源。'
-          : `${selectedYear ? `${selectedYear} 年 · ` : ''}${sourceSummary}`
-            + `显示 ${formatNumber(visible.length)} 个地点、${formatNumber(visits)} 条记录。`;
+          ? 'No sources selected.'
+          : `${selectedYear ? `${selectedYear} · ` : ''}${sourceSummary}`
+            + `Showing ${formatNumber(visible.length)} places and ${formatNumber(visits)} records.`;
       }
     };
 
@@ -342,7 +342,7 @@
     initialize(root).catch(() => {
       const details = root.querySelector('[data-moments-map-details]');
       if (details) {
-        details.textContent = '地图初始化失败，地点明细仍可在下方查看。';
+        details.textContent = 'The map failed to start. Place details below still work.';
       }
     });
   };

@@ -1,5 +1,5 @@
 ---
-name: Bug report / 问题反馈
+name: Bug report
 about: Report a reproducible problem using synthetic data
 title: ''
 labels: bug
@@ -8,14 +8,14 @@ assignees: ''
 
 <!-- Do not attach private names, chat logs, credentials, database dumps, or live screenshots. -->
 
-**Problem / 问题描述**
+**Problem**
 
-**Steps to reproduce with fictional data / 使用虚构数据复现**
+**Steps to reproduce with fictional data**
 
-**Expected and actual behavior / 预期与实际结果**
+**Expected and actual behavior**
 
-**Environment / 环境**
+**Environment**
 Commit or version, browser, operating system, and deployment method:
 
-**Validation / 补充说明**
+**Validation**
 Attach only reviewed, synthetic screenshots or a minimal reproduction.

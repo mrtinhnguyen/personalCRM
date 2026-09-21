@@ -10,8 +10,8 @@ window.initMonicaGraph = () => {
   const REDUCED_MOTION = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
   const integer = value => Math.max(0, Math.round(number(value)));
-  const formatNumber = value => new Intl.NumberFormat('zh-CN').format(integer(value));
-  const nodeLabel = node => node.name || node.label || node.u || '未知联系人';
+  const formatNumber = value => new Intl.NumberFormat('en-US').format(integer(value));
+  const nodeLabel = node => node.name || node.label || node.u || 'Unknown person';
 
   document.querySelectorAll('[data-relationship-graph]').forEach(root => {
     if (root.dataset.initialized) return;
@@ -61,12 +61,12 @@ window.initMonicaGraph = () => {
       status.classList.toggle('red', failed);
     };
     if (!context) {
-      setStatus('浏览器不支持 Canvas，无法显示关系图。', true);
+      setStatus('This browser cannot draw the graph on canvas.', true);
       loadButton.disabled = true;
       return;
     }
     if (!window.d3) {
-      setStatus('D3.js 未加载，无法显示动态关系图。', true);
+      setStatus('D3.js did not load, so the graph cannot run.', true);
       loadButton.disabled = true;
       return;
     }
@@ -125,7 +125,7 @@ window.initMonicaGraph = () => {
       if (!motionButton) {
         return;
       }
-      motionButton.textContent = simulationRunning ? '节点运动：开' : '节点运动：关';
+      motionButton.textContent = simulationRunning ? 'Node motion: on' : 'Node motion: off';
       motionButton.setAttribute('aria-pressed', String(simulationRunning));
     };
 
@@ -395,7 +395,7 @@ window.initMonicaGraph = () => {
           context.fillStyle = cluster.color;
           context.textAlign = 'center';
           context.textBaseline = 'middle';
-          context.fillText(`${cluster.label} · ${members.length}人`, center.x, center.y - radius + 13);
+          context.fillText(`${cluster.label} · ${members.length} people`, center.x, center.y - radius + 13);
         }
       });
 
@@ -489,19 +489,19 @@ window.initMonicaGraph = () => {
       });
 
       setStatus(
-        `已显示 ${formatNumber(visibleNodeIndexes.size)} / ${formatNumber(graph.displayNodeCount)} 个节点、`
-        + `${formatNumber(visibleEdges.length)} / ${formatNumber(graph.edges.length)} 条可见边、`
-        + `${formatNumber(graph.clusters.filter(cluster => !cluster.peripheral).length)} 个关系社群、`
-        + `${formatNumber(graph.clusters.filter(cluster => cluster.isolated).length)} 个独立社群、`
-        + `${formatNumber(visibleEdges.filter(edge => edge.crossCluster).length)} 条跨社群边。`
-        + (focusActive ? ` 已高亮 ${formatNumber(focusedNodeIndexes.size - 1)} 个直接关系。` : '')
-        + (simulationRunning ? ' 动态演算中。' : ' 节点运动已暂停。')
+        `Showing ${formatNumber(visibleNodeIndexes.size)} / ${formatNumber(graph.displayNodeCount)} nodes, `
+        + `${formatNumber(visibleEdges.length)} / ${formatNumber(graph.edges.length)} visible edges, `
+        + `${formatNumber(graph.clusters.filter(cluster => !cluster.peripheral).length)} communities, `
+        + `${formatNumber(graph.clusters.filter(cluster => cluster.isolated).length)} isolated communities, `
+        + `${formatNumber(visibleEdges.filter(edge => edge.crossCluster).length)} cross-community edges.`
+        + (focusActive ? ` Highlighted ${formatNumber(focusedNodeIndexes.size - 1)} direct ties.` : '')
+        + (simulationRunning ? ' Layout is running.' : ' Node motion is paused.')
       );
     }
 
     const prepareGraph = payload => {
       if (!payload || !Array.isArray(payload.nodes) || !Array.isArray(payload.edges)) {
-        throw new Error('图文件缺少 nodes 或 edges 数组');
+        throw new Error('Graph payload is missing nodes or edges');
       }
       const nodes = payload.nodes.map((node, index) => {
         const facts = Array.isArray(node.facts)
@@ -511,7 +511,7 @@ window.initMonicaGraph = () => {
         const x = Number(node.x);
         const y = Number(node.y);
         if (!Number.isFinite(x) || !Number.isFinite(y)) {
-          throw new Error(`节点 ${index} 缺少有效的预计算坐标`);
+          throw new Error(`Node ${index} is missing precomputed coordinates`);
         }
         return {
           ...node,
@@ -625,7 +625,7 @@ window.initMonicaGraph = () => {
             rank,
             targetX: radius * Math.cos(angle),
             targetY: radius * Math.sin(angle),
-            label: cluster.peripheral ? '未形成密切社群' : `社群 ${rank + 1}`,
+            label: cluster.peripheral ? 'No close community' : `Community ${rank + 1}`,
             color: cluster.peripheral
               ? '#98a2b3'
               : COMMUNITY_COLORS[Math.abs(cluster.id) % COMMUNITY_COLORS.length],
@@ -666,7 +666,7 @@ window.initMonicaGraph = () => {
       ));
       isolatedClusters.forEach(cluster => {
         cluster.isolated = true;
-        cluster.label = `独立社群 ${cluster.rank + 1}`;
+        cluster.label = `Isolated community ${cluster.rank + 1}`;
       });
       const packedCircles = [...connectedClusters, ...isolatedClusters].map(cluster => {
         cluster.layoutRadius = 0.13 + 0.035 * Math.sqrt(cluster.members.length);
@@ -745,28 +745,28 @@ window.initMonicaGraph = () => {
     const showDetails = index => {
       const detailIndex = index ?? selected;
       if (detailIndex === null || !graph) {
-        details.textContent = '搜索姓名或将指针移到节点上查看互动明细。';
+        details.textContent = 'Search a name or hover a node for interaction details.';
         return;
       }
       const node = graph.nodes[detailIndex];
       const cluster = graph.clusters[node.clusterIndex];
-      const match = node.known ? '已匹配 Monica 联系人，可点击打开' : '未匹配 Monica 联系人';
+      const match = node.known ? 'Matched to a Monica person · click to open' : 'Not matched to a Monica person';
       details.textContent = [
         nodeLabel(node),
         match,
         cluster.label,
-        `关系 ${formatNumber(node.partners)}`,
-        `对外互动：赞 ${formatNumber(node.outward[0])} / 评 ${formatNumber(node.outward[1])} / 回 ${formatNumber(node.outward[2])} / 提醒 ${formatNumber(node.outward[3])}`,
-        `收到互动：赞 ${formatNumber(node.inward[0])} / 评 ${formatNumber(node.inward[1])} / 回 ${formatNumber(node.inward[2])} / 被提醒 ${formatNumber(node.inward[3])}`,
-        `共同受众 ${formatNumber(node.co)}`,
-        `共同群 ${formatNumber(node.group)}`,
-        node.last ? `最近互动 ${node.last}` : '最近互动未知',
+        `Ties ${formatNumber(node.partners)}`,
+        `Sent: likes ${formatNumber(node.outward[0])} / comments ${formatNumber(node.outward[1])} / replies ${formatNumber(node.outward[2])} / mentions ${formatNumber(node.outward[3])}`,
+        `Received: likes ${formatNumber(node.inward[0])} / comments ${formatNumber(node.inward[1])} / replies ${formatNumber(node.inward[2])} / mentions ${formatNumber(node.inward[3])}`,
+        `Shared audience ${formatNumber(node.co)}`,
+        `Shared groups ${formatNumber(node.group)}`,
+        node.last ? `Last interaction ${node.last}` : 'Last interaction unknown',
       ].join(' · ');
       if (node.known && node.hash) {
         const link = document.createElement('a');
         link.className = 'button button-soft';
         link.href = root.dataset.contactUrlTemplate.replace('__CONTACT_HASH__', encodeURIComponent(String(node.hash)));
-        link.textContent = `打开 ${nodeLabel(node)} 的资料`;
+        link.textContent = `Open ${nodeLabel(node)}`;
         details.append(document.createElement('br'), link);
       }
     };
@@ -909,16 +909,16 @@ window.initMonicaGraph = () => {
         : rawGenerated;
       const generatedDate = generatedValue ? new Date(generatedValue) : null;
       const generated = generatedDate && !Number.isNaN(generatedDate.getTime())
-        ? generatedDate.toLocaleString('zh-CN')
-        : '未知';
+        ? generatedDate.toLocaleString('en-US')
+        : 'unknown';
       const parts = [
-        `生成于 ${generated}`,
-        `Monica 联系人匹配 ${formatNumber(known)} / ${formatNumber(payload.nodes.length)}`,
+        `Generated ${generated}`,
+        `Monica matches ${formatNumber(known)} / ${formatNumber(payload.nodes.length)}`,
       ];
       if (posts > 0) {
-        parts.push(`基于 ${formatNumber(posts)} 条已缓存朋友圈`);
+        parts.push(`Based on ${formatNumber(posts)} cached Moments posts`);
       }
-      parts.push('覆盖度受 sns.db 已缓存范围限制；图中缺少边不代表现实关系缺失');
+      parts.push('Coverage is limited to the cached archive; a missing edge is not proof that two people are unconnected');
       footnote.textContent = parts.join(' · ');
       footnote.hidden = false;
     };
@@ -929,9 +929,9 @@ window.initMonicaGraph = () => {
       }
       loading = true;
       loadButton.disabled = true;
-      setStatus('正在读取本机关系图…');
-      details.textContent = '正在加载数据。';
-      drawMessage('正在加载关系图…');
+      setStatus('Loading the local graph…');
+      details.textContent = 'Loading data.';
+      drawMessage('Loading the graph…');
       try {
         const response = await fetch(root.dataset.graphSource, {
           credentials: 'same-origin',
@@ -947,9 +947,9 @@ window.initMonicaGraph = () => {
           simulation?.stop();
           simulation = null;
           graph = null;
-          setStatus('关系图数据为空；当前快照没有可显示的节点。');
-          details.textContent = '没有可显示的关系明细。';
-          drawMessage('当前快照没有关系节点');
+          setStatus('The graph is empty; this snapshot has no nodes to show.');
+          details.textContent = 'No relationship details to show.';
+          drawMessage('This snapshot has no relationship nodes');
           return;
         }
         graph = prepared;
@@ -959,7 +959,7 @@ window.initMonicaGraph = () => {
         graph.nodes
           .filter(node => node.u !== graph.self_wxid)
           .map(node => nodeLabel(node))
-          .sort((left, right) => left.localeCompare(right, 'zh-CN'))
+          .sort((left, right) => left.localeCompare(right, 'en-US'))
           .forEach(label => {
             const option = document.createElement('option');
             option.value = label;
@@ -976,7 +976,7 @@ window.initMonicaGraph = () => {
           groupToggle.checked = false;
         }
         controls.hidden = false;
-        loadButton.textContent = '关系图已加载';
+        loadButton.textContent = 'Graph loaded';
         showDetails(null);
         resetView();
         createSimulation();
@@ -990,12 +990,12 @@ window.initMonicaGraph = () => {
         simulation = null;
         graph = null;
         loadButton.disabled = false;
-        loadButton.textContent = '重试加载';
+        loadButton.textContent = 'Retry load';
         controls.hidden = true;
         footnote.hidden = true;
-        setStatus(`关系图加载失败：${error.message}`, true);
-        details.textContent = '请确认静态图文件已生成并挂载，然后重试。';
-        drawMessage('关系图加载失败');
+        setStatus(`Could not load the graph: ${error.message}`, true);
+        details.textContent = 'Confirm the graph file is generated and mounted, then retry.';
+        drawMessage('Graph failed to load');
       } finally {
         loading = false;
       }
@@ -1019,24 +1019,24 @@ window.initMonicaGraph = () => {
         if (!graph) {
           return;
         }
-        const query = searchInput.value.trim().toLocaleLowerCase('zh-CN');
+        const query = searchInput.value.trim().toLocaleLowerCase('en-US');
         const index = graph.nodes.findIndex(node => {
           if (node.u === graph.self_wxid) {
             return false;
           }
           const labels = [nodeLabel(node), node.label, node.name, node.u]
             .filter(Boolean)
-            .map(value => String(value).toLocaleLowerCase('zh-CN'));
+            .map(value => String(value).toLocaleLowerCase('en-US'));
           return labels.some(label => label === query);
         });
         const fallback = index >= 0 ? index : graph.nodes.findIndex(node => (
           node.u !== graph.self_wxid
           && [nodeLabel(node), node.label, node.name, node.u]
             .filter(Boolean)
-            .some(value => String(value).toLocaleLowerCase('zh-CN').includes(query))
+            .some(value => String(value).toLocaleLowerCase('en-US').includes(query))
         ));
         if (!query || fallback < 0) {
-          searchInput.setCustomValidity('没有找到匹配的关系节点');
+          searchInput.setCustomValidity('No matching node');
           searchInput.reportValidity();
           return;
         }
