@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ProfileCreate(BaseModel):
@@ -16,9 +16,18 @@ class BootstrapRequest(BaseModel):
     password: str = Field(min_length=12, max_length=512)
 
 
-class LoginRequest(BootstrapRequest):
+class LoginRequest(BaseModel):
+    """Login validates credentials; password policy applies only at bootstrap."""
+
+    email: str = Field(min_length=1, max_length=320)
+    password: str = Field(min_length=1, max_length=512)
     recovery_code: str | None = None
     totp_code: str | None = Field(default=None, min_length=6, max_length=8)
+
+    @field_validator("totp_code", "recovery_code", mode="before")
+    @classmethod
+    def empty_optional_as_none(cls, value: object) -> object:
+        return None if value == "" else value
 
 
 class TotpCode(BaseModel):

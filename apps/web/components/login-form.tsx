@@ -14,15 +14,36 @@ export function LoginForm() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
+  function formatDetail(detail: unknown): string {
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const messages = detail
+        .map((item) => (item && typeof item === "object" && "msg" in item ? String((item as { msg: unknown }).msg) : null))
+        .filter(Boolean);
+      if (messages.length) return messages.join(" ");
+    }
+    return "Sign-in failed. Check the email or password.";
+  }
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     setBusy(true); setError("");
-    await fetch("/api/v1/auth/csrf");
-    const response = await fetch("/api/v1/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, totp_code: totpCode || null, recovery_code: recoveryCode || null }) });
+    await fetch("/api/v1/auth/csrf", { credentials: "same-origin" });
+    const response = await fetch("/api/v1/auth/login", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim(),
+        password,
+        totp_code: totpCode.trim() || null,
+        recovery_code: recoveryCode.trim() || null,
+      }),
+    });
     if (response.ok) { router.replace("/dashboard"); return; }
     const body = await response.json().catch(() => ({}));
     if (response.status === 401 && body.detail === "TOTP code required") setNeedsTotp(true);
-    setError(body.detail ?? "Sign-in failed. Check the email or password.");
+    setError(formatDetail(body.detail));
     setBusy(false);
   }
 
